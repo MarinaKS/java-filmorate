@@ -6,10 +6,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -75,19 +74,17 @@ class FilmControllerTest {
                 )
                 .andExpect(status().isOk());
 
-        try{
-
-
-        mockMvc.perform(
-                        put("/films")
-                                .content("{\n" +
-                                        "    \"timestamp\": \"2023-06-08T21:49:42.303+00:00\",\n" +
-                                        "    \"status\": 500,\n" +
-                                        "    \"error\": \"Internal Server Error\",\n" +
-                                        "    \"path\": \"/films\"\n" +
-                                        "}")
-                                .contentType(MediaType.APPLICATION_JSON)
-                );
+        try {
+            mockMvc.perform(
+                    put("/films")
+                            .content("{\n" +
+                                    "    \"timestamp\": \"2023-06-08T21:49:42.303+00:00\",\n" +
+                                    "    \"status\": 500,\n" +
+                                    "    \"error\": \"Internal Server Error\",\n" +
+                                    "    \"path\": \"/films\"\n" +
+                                    "}")
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
         } catch (Exception e) {
             assertTrue(e.getCause() instanceof ValidationException);
         }

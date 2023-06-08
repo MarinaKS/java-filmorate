@@ -71,18 +71,19 @@ class UserControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk());
+
         try {
             mockMvc.perform(
-                            put("/users")
-                                    .content("{\n" +
-                                            "  \"login\": \"doloreUpdate\",\n" +
-                                            "  \"name\": \"est adipisicing\",\n" +
-                                            "  \"id\": 9999,\n" +
-                                            "  \"email\": \"mail@yandex.ru\",\n" +
-                                            "  \"birthday\": \"1976-09-20\"\n" +
-                                            "}")
-                                    .contentType(MediaType.APPLICATION_JSON)
-                    );
+                    put("/users")
+                            .content("{\n" +
+                                    "  \"login\": \"doloreUpdate\",\n" +
+                                    "  \"name\": \"est adipisicing\",\n" +
+                                    "  \"id\": 9999,\n" +
+                                    "  \"email\": \"mail@yandex.ru\",\n" +
+                                    "  \"birthday\": \"1976-09-20\"\n" +
+                                    "}")
+                            .contentType(MediaType.APPLICATION_JSON)
+            );
 
         } catch (Exception e) {
             assertTrue(e.getCause() instanceof ValidationException);
