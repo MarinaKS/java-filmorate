@@ -25,17 +25,20 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getFilms() {
+        log.info("getFilms");
         return filmService.getFilms();
     }
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
+        log.info("createFilm: film = " + film);
         validateFilm(film);
         return filmService.createFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
+        log.info("updateFilm: film = " + film);
         validateFilm(film);
         if (filmService.getFilmById(film.getId()) == null) {
             throw new ResourceNotFoundException("нет фильма с таким id");
@@ -45,21 +48,25 @@ public class FilmController {
 
     @GetMapping("/{id}")
     public Film getUser(@PathVariable Integer id) {
+        log.info("getUser: id = " + id);
         return filmService.getFilmById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public void addLikeToFilm(@PathVariable Integer id, @PathVariable Integer userId) {
+        log.info("addLikeToFilm: id = " + id + ", userId = " + userId);
         filmService.addLikeToFilm(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLikeToFilm(@PathVariable Integer id, @PathVariable Integer userId) {
+        log.info("deleteLikeToFilm: id = " + id + ", userId = " + userId);
         filmService.deleteLikeToFilm(id, userId);
     }
 
     @GetMapping("/popular")
     public List<Film> getTopFilms(@RequestParam(required = false, defaultValue = "10") int count) {
+        log.info("getTopFilms: count = " + count);
         return filmService.getTopFilms(count);
     }
 
