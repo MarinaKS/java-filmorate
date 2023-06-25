@@ -10,14 +10,13 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    FilmService filmService;
+    private final FilmService filmService;
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -26,7 +25,7 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getFilms() {
-        return new ArrayList<>(filmService.getFilms());
+        return filmService.getFilms();
     }
 
     @PostMapping
@@ -46,21 +45,16 @@ public class FilmController {
 
     @GetMapping("/{id}")
     public Film getUser(@PathVariable Integer id) {
-        validateId(id);
         return filmService.getFilmById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public void addLikeToFilm(@PathVariable Integer id, @PathVariable Integer userId) {
-        validateId(id);
-        validateId(userId);
         filmService.addLikeToFilm(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLikeToFilm(@PathVariable Integer id, @PathVariable Integer userId) {
-        validateId(id);
-        validateId(userId);
         filmService.deleteLikeToFilm(id, userId);
     }
 
@@ -75,9 +69,4 @@ public class FilmController {
         }
     }
 
-    private void validateId(Integer id) {
-        if (id <= 0) {
-            throw new ResourceNotFoundException("отрицательный или нулевой id");
-        }
-    }
 }

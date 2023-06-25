@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -37,7 +37,7 @@ public class UserController {
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        if (user.getName() == null || user.getName().isEmpty()) {
+        if (validateNameForUseLogin(user.getName())) {
             user.setName(user.getLogin());
         }
         if (userService.getUserById(user.getId()) == null) {
@@ -53,34 +53,28 @@ public class UserController {
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addUserFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
-        this.validateId(id);
-        this.validateId(friendId);
         userService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
-        validateId(id);
-        validateId(friendId);
         userService.deleteFriend(id, friendId);
     }
 
     @GetMapping("/{id}/friends")
     public List<User> getFriendsByUserId(@PathVariable Integer id) {
-        validateId(id);
         return userService.getFriendsByUserId(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriendsByUserIds(@PathVariable Integer id, @PathVariable Integer otherId) {
-        validateId(id);
-        validateId(otherId);
         return userService.getCommonFriendsByUserIds(id, otherId);
     }
 
-    private void validateId(Integer id) {
-        if (id <= 0) {
-            throw new ResourceNotFoundException("отрицательный или нулевой id");
+    private boolean validateNameForUseLogin(String name) {
+        if (name == null || name.isEmpty()) {
+            return true;
         }
+        return false;
     }
 }

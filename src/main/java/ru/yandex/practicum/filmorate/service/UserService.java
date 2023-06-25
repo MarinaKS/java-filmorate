@@ -6,11 +6,13 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserService {
-    UserStorage userStorage;
+    private final UserStorage userStorage;
 
     @Autowired
     public UserService(UserStorage userStorage) {
@@ -42,12 +44,14 @@ public class UserService {
     }
 
     public boolean addFriend(Integer userId, Integer friendId) {
+        userStorage.getUserByIdOrThrow(friendId);
         userStorage.getUserByIdOrThrow(userId).getFriends().add(friendId);
         userStorage.getUserByIdOrThrow(friendId).getFriends().add(userId);
         return true;
     }
 
     public boolean deleteFriend(Integer userId, Integer friendId) {
+        userStorage.getUserByIdOrThrow(friendId);
         userStorage.getUserByIdOrThrow(userId).getFriends().remove(friendId);
         userStorage.getUserByIdOrThrow(friendId).getFriends().remove(userId);
         return true;
@@ -62,11 +66,12 @@ public class UserService {
     }
 
     public ArrayList<User> getCommonFriendsByUserIds(Integer userId, Integer otherId) {
+        Set<Integer> userFriends = new HashSet<>(userStorage.getUserByIdOrThrow(userId).getFriends());
+        Set<Integer> otherFriends = new HashSet<>(userStorage.getUserByIdOrThrow(otherId).getFriends());
+        userFriends.retainAll(otherFriends);
         ArrayList<User> friendsList = new ArrayList<>();
-        for (Integer id : userStorage.getUserByIdOrThrow(userId).getFriends()) {
-            if (userStorage.getUserByIdOrThrow(otherId).getFriends().contains(id)) {
-                friendsList.add(userStorage.getUserByIdOrThrow(id));
-            }
+        for (Integer id : userFriends) {
+            friendsList.add(userStorage.getUserByIdOrThrow(id));
         }
         return friendsList;
     }
