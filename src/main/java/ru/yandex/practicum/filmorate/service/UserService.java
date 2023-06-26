@@ -20,11 +20,13 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        validateUserName(user);
         return userStorage.createUser(user);
     }
 
 
     public User updateUser(User user) {
+        validateUserName(user);
         return userStorage.updateUser(user);
     }
 
@@ -44,16 +46,18 @@ public class UserService {
     }
 
     public boolean addFriend(Integer userId, Integer friendId) {
-        userStorage.getUserByIdOrThrow(friendId);
-        userStorage.getUserByIdOrThrow(userId).getFriends().add(friendId);
-        userStorage.getUserByIdOrThrow(friendId).getFriends().add(userId);
+        User user = userStorage.getUserByIdOrThrow(userId);
+        User friend = userStorage.getUserByIdOrThrow(friendId);
+        user.getFriends().add(friendId);
+        friend.getFriends().add(userId);
         return true;
     }
 
     public boolean deleteFriend(Integer userId, Integer friendId) {
-        userStorage.getUserByIdOrThrow(friendId);
-        userStorage.getUserByIdOrThrow(userId).getFriends().remove(friendId);
-        userStorage.getUserByIdOrThrow(friendId).getFriends().remove(userId);
+        User user = userStorage.getUserByIdOrThrow(userId);
+        User friend = userStorage.getUserByIdOrThrow(friendId);
+        user.getFriends().remove(friendId);
+        friend.getFriends().remove(userId);
         return true;
     }
 
@@ -74,5 +78,11 @@ public class UserService {
             friendsList.add(userStorage.getUserByIdOrThrow(id));
         }
         return friendsList;
+    }
+
+    private void validateUserName(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
     }
 }
