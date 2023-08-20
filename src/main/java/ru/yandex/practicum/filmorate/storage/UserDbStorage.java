@@ -2,11 +2,15 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -22,11 +26,17 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User createUser(User user) {
-        jdbcTemplate.update(
-                "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)",
-                user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
-        Integer id = jdbcTemplate.queryForObject("select user_id from users where login = ?", Integer.class, user.getLogin());
-        user.setId(id);
+        String sql = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"USER_ID"});
+            ps.setString(1, user.getEmail());
+            ps.setString(2, user.getLogin());
+            ps.setString(3, user.getName());
+            ps.setDate(4, (Date.valueOf(user.getBirthday())));
+            return ps;
+        }, keyHolder);
+        user.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
         return user;
     }
 
