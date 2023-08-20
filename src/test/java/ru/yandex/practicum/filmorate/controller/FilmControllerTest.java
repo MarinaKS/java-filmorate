@@ -27,7 +27,8 @@ class FilmControllerTest {
                                         "  \"name\": \"nisi eiusmod\",\n" +
                                         "  \"description\": \"adipisicing\",\n" +
                                         "  \"releaseDate\": \"1967-03-25\",\n" +
-                                        "  \"duration\": 100\n" +
+                                        "  \"duration\": 100,\n" +
+                                        "  \"mpa\": { \"id\": 1}\n" +
                                         "}")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -39,7 +40,8 @@ class FilmControllerTest {
                                         "  \"name\": \"\",\n" +
                                         "  \"description\": \"Description\",\n" +
                                         "  \"releaseDate\": \"1900-03-25\",\n" +
-                                        "  \"duration\": 200\n" +
+                                        "  \"duration\": 200,\n" +
+                                        "  \"mpa\": { \"id\": 1}\n" +
                                         "}")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -54,7 +56,8 @@ class FilmControllerTest {
                                         "  \"name\": \"nisi eiusmod\",\n" +
                                         "  \"description\": \"adipisicing\",\n" +
                                         "  \"releaseDate\": \"1967-03-25\",\n" +
-                                        "  \"duration\": 100\n" +
+                                        "  \"duration\": 100,\n" +
+                                        "  \"mpa\": { \"id\": 1}\n" +
                                         "}")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -68,7 +71,7 @@ class FilmControllerTest {
                                         "  \"releaseDate\": \"1989-04-17\",\n" +
                                         "  \"description\": \"New film update decription\",\n" +
                                         "  \"duration\": 190,\n" +
-                                        "  \"rate\": 4\n" +
+                                        "  \"mpa\": { \"id\": 1}\n" +
                                         "}")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
