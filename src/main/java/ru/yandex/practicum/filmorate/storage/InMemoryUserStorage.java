@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -43,5 +44,25 @@ public class InMemoryUserStorage implements UserStorage {
             throw new ResourceNotFoundException("нет пользователя с таким id");
         }
         return users.get(id);
+    }
+
+    @Override
+    public void addFriend(Integer id, Integer friendId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteFriend(Integer id, Integer friendId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<User> getCommonFriends(Integer id, Integer friendId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<User> getFriends(Integer id) {
+        throw new UnsupportedOperationException();
     }
 }
