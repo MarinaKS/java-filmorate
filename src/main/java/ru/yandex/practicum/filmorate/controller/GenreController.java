@@ -21,6 +21,7 @@ public class GenreController {
     public GenreController(FilmService filmService) {
         this.filmService = filmService;
     }
+
     @GetMapping("/{id}")
     public Genre getGenre(@PathVariable int id) {
         return filmService.getGenreById(id);

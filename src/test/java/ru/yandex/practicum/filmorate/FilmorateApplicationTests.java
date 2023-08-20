@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -18,9 +16,7 @@ import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -151,15 +147,15 @@ class FilmorateApplicationTests {
         Film testFilm2WithId = filmDbStorage.createFilm(testFilm2);
         User testUserWithId = userDbStorage.createUser(testUser);
 
-        filmDbStorage.addLikeToFilm(testFilmWithId.getId(),testUserWithId.getId());
+        filmDbStorage.addLikeToFilm(testFilmWithId.getId(), testUserWithId.getId());
 
         List<Film> topFilms = filmDbStorage.getTopFilms(3);
 
         assertEquals(2, topFilms.size());
         assertEquals(testFilmWithId.getId(), topFilms.get(0).getId());
 
-        filmDbStorage.deleteLikeToFilm(testFilmWithId.getId(),testUserWithId.getId());
-        filmDbStorage.addLikeToFilm(testFilm2WithId.getId(),testUserWithId.getId());
+        filmDbStorage.deleteLikeToFilm(testFilmWithId.getId(), testUserWithId.getId());
+        filmDbStorage.addLikeToFilm(testFilm2WithId.getId(), testUserWithId.getId());
 
         List<Film> topFilms2 = filmDbStorage.getTopFilms(3);
 

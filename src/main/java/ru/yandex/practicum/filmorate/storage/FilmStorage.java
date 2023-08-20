@@ -20,9 +20,14 @@ public interface FilmStorage {
     void addLikeToFilm(Integer filmId, Integer userId);
 
     void deleteLikeToFilm(Integer filmId, Integer userId);
+
     List<Film> getTopFilms(Integer count);
+
     public Genre getGenreByIdOrThrow(int genreId);
+
     public List<Genre> getAllGenres();
+
     public Mpa getMpaByIdOrThrow(int mpaId);
+
     public List<Mpa> getAllMpas();
 }

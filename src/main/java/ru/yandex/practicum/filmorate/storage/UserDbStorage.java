@@ -2,14 +2,14 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Primary
 @Component
@@ -49,7 +49,7 @@ public class UserDbStorage implements UserStorage {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql);
         List<User> users = new ArrayList<>();
         while (userRows.next()) {
-                users.add(mapUser(userRows));
+            users.add(mapUser(userRows));
         }
         return users;
     }
