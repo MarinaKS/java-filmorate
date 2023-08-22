@@ -185,11 +185,6 @@ public class FilmDbStorage implements FilmStorage {
     private void updateFilmGenres(Film film) {
         jdbcTemplate.update("delete from film_genres where film_id = ?", film.getId());
         for (Genre genre : film.getGenres()) {
-            SqlRowSet filmGenresRows = jdbcTemplate.queryForRowSet("select film_id, genre_id from film_genres " +
-                    "where film_id = ? and genre_id = ?", film.getId(), genre.getId());
-            if (filmGenresRows.next()) {
-                continue;
-            }
             jdbcTemplate.update("insert into film_genres(film_id, genre_id) values (?,?)", film.getId(), genre.getId());
         }
     }
