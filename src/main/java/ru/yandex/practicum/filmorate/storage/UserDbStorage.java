@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -11,6 +12,8 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -56,33 +59,16 @@ public class UserDbStorage implements UserStorage {
     @Override
     public List<User> getUsers() {
         String sql = "select * from users";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql);
-        List<User> users = new ArrayList<>();
-        while (userRows.next()) {
-            users.add(mapUser(userRows));
-        }
-        return users;
+        return jdbcTemplate.query(sql, this::mapUser);
     }
 
     @Override
     public User getUserByIdOrThrow(Integer id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from users where user_id = ?", id);
-        if (userRows.next()) {
-            return mapUser(userRows);
-        } else {
+        try {
+            return jdbcTemplate.queryForObject("select * from users where user_id = ?", this::mapUser, id);
+        } catch (EmptyResultDataAccessException e) {
             throw new ResourceNotFoundException("Пользователь с таким id не найден.");
         }
-    }
-
-    private User mapUser(SqlRowSet userRows) {
-        User user = new User(
-                userRows.getInt("user_id"),
-                userRows.getString("email"),
-                userRows.getString("login"),
-                userRows.getString("name"),
-                Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
-
-        return user;
     }
 
     @Override
@@ -137,6 +123,14 @@ public class UserDbStorage implements UserStorage {
         return friendsList;
     }
 
+    private User mapUser(ResultSet rows, int rowNum) throws SQLException {
+        return new User(
+                rows.getInt("user_id"),
+                rows.getString("email"),
+                rows.getString("login"),
+                rows.getString("name"),
+                Objects.requireNonNull(rows.getDate("birthday")).toLocalDate());
+    }
 }
 
 

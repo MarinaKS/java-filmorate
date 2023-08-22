@@ -2,10 +2,10 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -13,7 +13,8 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
@@ -74,22 +75,15 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getFilms() {
         String sql = "select film_id, name, description, release_date, duration, mpa_id from films";
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql);
-        List<Film> films = new ArrayList<>();
-        while (rows.next()) {
-            Film film = mapFilm(rows);
-            films.add(film);
-        }
-        return films;
+        return jdbcTemplate.query(sql, this::mapFilm);
     }
 
     @Override
     public Film getFilmByIdOrThrow(Integer id) {
         String sql = "select film_id, name, description, release_date, duration, mpa_id from films where film_id = ?";
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql, id);
-        if (rows.next()) {
-            return mapFilm(rows);
-        } else {
+        try {
+            return jdbcTemplate.queryForObject(sql, this::mapFilm, id);
+        } catch (EmptyResultDataAccessException e) {
             throw new ResourceNotFoundException("Фильм с таким id не найден.");
         }
     }
@@ -112,23 +106,15 @@ public class FilmDbStorage implements FilmStorage {
                 "from films as f " +
                 "order by film_likes desc " +
                 "limit ?";
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql, count);
-        List<Film> films = new ArrayList<>();
-        while (rows.next()) {
-            log.info("film_id={}, film_likes={}", rows.getInt("film_id"), rows.getInt("film_likes"));
-            Film film = mapFilm(rows);
-            films.add(film);
-        }
-        return films;
+        return jdbcTemplate.query(sql, this::mapFilm, count);
     }
 
     @Override
     public Genre getGenreByIdOrThrow(int genreId) {
         String sql = "select genre_id, name from genres where genre_id = ?";
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql, genreId);
-        if (rows.next()) {
-            return mapGenre(rows);
-        } else {
+        try {
+            return jdbcTemplate.queryForObject(sql, this::mapGenre, genreId);
+        } catch (EmptyResultDataAccessException e) {
             throw new ResourceNotFoundException("Жанр с таким id не найден.");
         }
     }
@@ -136,23 +122,15 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Genre> getAllGenres() {
         String sql = "select genre_id, name from genres";
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql);
-        List<Genre> genres = new ArrayList<>();
-        while (rows.next()) {
-            Genre genre = mapGenre(rows);
-            genres.add(genre);
-        }
-        return genres;
+        return jdbcTemplate.query(sql, this::mapGenre);
     }
 
     @Override
     public Mpa getMpaByIdOrThrow(int mpaId) {
         String sql = "select mpa_id, name from mpas where mpa_id = ?";
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql, mpaId);
-
-        if (rows.next()) {
-            return mapMpa(rows);
-        } else {
+        try {
+            return jdbcTemplate.queryForObject(sql, this::mapMpa, mpaId);
+        } catch (EmptyResultDataAccessException e) {
             throw new ResourceNotFoundException("Рейтинг с таким id не найден.");
         }
     }
@@ -160,26 +138,13 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Mpa> getAllMpas() {
         String sql = "select mpa_id, name from mpas";
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql);
-        List<Mpa> mpas = new ArrayList<>();
-        while (rows.next()) {
-            Mpa mpa = mapMpa(rows);
-            mpas.add(mpa);
-        }
-        return mpas;
+        return jdbcTemplate.query(sql, this::mapMpa);
     }
 
     public List<Genre> getGenresByFilmId(Integer filmId) {
         String sql = "select genre_id, name from genres " +
                 "where genre_id in (select genre_id from film_genres where film_id = ?)";
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql, filmId);
-        List<Genre> genres = new ArrayList<>();
-
-        while (rows.next()) {
-            Genre genre = mapGenre(rows);
-            genres.add(genre);
-        }
-        return genres;
+        return jdbcTemplate.query(sql, this::mapGenre, filmId);
     }
 
     private void updateFilmGenres(Film film) {
@@ -189,7 +154,7 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    private Film mapFilm(SqlRowSet rows) {
+    private Film mapFilm(ResultSet rows, int rowNum) throws SQLException {
         int filmId = rows.getInt("film_id");
         Film film = new Film(
                 filmId,
@@ -205,19 +170,15 @@ public class FilmDbStorage implements FilmStorage {
         return film;
     }
 
-    private Genre mapGenre(SqlRowSet rows) {
-        Genre genre = new Genre(
+    private Genre mapGenre(ResultSet rows, int rowNum) throws SQLException {
+        return new Genre(
                 rows.getInt("genre_id"),
                 rows.getString("name"));
-
-        return genre;
     }
 
-    private Mpa mapMpa(SqlRowSet rows) {
-        Mpa mpa = new Mpa(
+    private Mpa mapMpa(ResultSet rows, int rowNum) throws SQLException {
+        return new Mpa(
                 rows.getInt("mpa_id"),
                 rows.getString("name"));
-
-        return mpa;
     }
 }
