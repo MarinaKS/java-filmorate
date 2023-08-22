@@ -149,9 +149,11 @@ public class FilmDbStorage implements FilmStorage {
 
     private void updateFilmGenres(Film film) {
         jdbcTemplate.update("delete from film_genres where film_id = ?", film.getId());
-        for (Genre genre : film.getGenres()) {
-            jdbcTemplate.update("insert into film_genres(film_id, genre_id) values (?,?)", film.getId(), genre.getId());
-        }
+        jdbcTemplate.batchUpdate("insert into film_genres(film_id, genre_id) values (?,?)", film.getGenres(),
+                film.getGenres().size(), (ps, genre) -> {
+                    ps.setInt(1, film.getId());
+                    ps.setInt(2, genre.getId());
+                });
     }
 
     private Film mapFilm(ResultSet rows, int rowNum) throws SQLException {
