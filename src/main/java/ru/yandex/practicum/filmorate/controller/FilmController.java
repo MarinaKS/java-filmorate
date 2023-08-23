@@ -48,8 +48,8 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getUser(@PathVariable Integer id) {
-        log.info("getUser: id = {}", id);
+    public Film getFilm(@PathVariable Integer id) {
+        log.info("getFilm: id = {}", id);
         return filmService.getFilmById(id);
     }
 

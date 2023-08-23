@@ -44,4 +44,24 @@ public class InMemoryUserStorage implements UserStorage {
         }
         return users.get(id);
     }
+
+    @Override
+    public void addFriend(Integer id, Integer friendId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteFriend(Integer id, Integer friendId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<User> getCommonFriends(Integer id, Integer friendId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<User> getFriends(Integer id) {
+        throw new UnsupportedOperationException();
+    }
 }
